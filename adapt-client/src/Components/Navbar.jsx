@@ -8,8 +8,12 @@ export default function Navbar() {
     <div className="flex flex-wrap items-center justify-between p-3 m-3 bg-white shadow-2xl rounded-md">
       {/* Logo and Title */}
       <Link to="/" className="flex items-center gap-2">
-        <img src={logo} alt="logo" className="h-8 w-8" />
-        <span className="text-2xl font-light">aDApt</span>
+        <img src={logo} alt="logo" className="h-10 w-10" />
+        <span
+          className="text-3xl font-extralight"
+        >
+          aDApt
+        </span>
       </Link>
 
       {/* Get Started Button */}

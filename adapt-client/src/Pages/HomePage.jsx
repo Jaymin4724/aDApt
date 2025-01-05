@@ -1,7 +1,11 @@
 import React from "react";
 import Navbar from "../Components/Navbar";
 import "@fontsource/merriweather"; // For serif font
+import "@fontsource-variable/raleway";
 import { motion } from "framer-motion"; // Import Framer Motion
+import shared from "../assets/shared.png";
+import lnf from "../assets/lnf.png";
+import qna from "../assets/qna.png";
 
 export default function HomePage() {
   return (
@@ -18,7 +22,7 @@ export default function HomePage() {
       >
         <h1
           className="text-center text-3xl md:text-4xl leading-relaxed italic font-semibold"
-          style={{ fontFamily: '"Merriweather", serif' }}
+          style={{ fontFamily: '"Raleway Variable", sans-serif' }}
         >
           Simplify student life with <span className="font-bold">aDApt</span>
           <br />
@@ -38,6 +42,11 @@ export default function HomePage() {
           className="bg-white shadow-lg rounded-lg p-6 px-10 border border-teal-200 hover:shadow-2xl hover:scale-105 transition-transform duration-300"
           whileHover={{ scale: 1.1 }}
         >
+          <img
+            src={shared}
+            alt="Resource Library Icon"
+            className="w-full h-50 object-cover rounded-t-lg mb-4"
+          />
           <h2 className="text-2xl font-bold mb-4 text-teal-600">
             Shared Resource Library
           </h2>
@@ -54,6 +63,11 @@ export default function HomePage() {
           className="bg-white shadow-lg rounded-lg p-6 px-10 border border-yellow-300 hover:shadow-2xl hover:scale-105 transition-transform duration-300"
           whileHover={{ scale: 1.1 }}
         >
+          <img
+            src={qna}
+            alt="Q&A Manager Icon"
+            className="w-full h-50 object-cover rounded-t-lg mb-4"
+          />
           <h2 className="text-2xl font-bold mb-4 text-yellow-500">
             Q&A Manager
           </h2>
@@ -70,6 +84,11 @@ export default function HomePage() {
           className="bg-white shadow-lg rounded-lg p-6 px-10 border border-pink-300 hover:shadow-2xl hover:scale-105 transition-transform duration-300"
           whileHover={{ scale: 1.1 }}
         >
+          <img
+            src={lnf}
+            alt="Lost & Found Icon"
+            className="w-full h-50 object-cover rounded-t-lg mb-4"
+          />
           <h2 className="text-2xl font-bold mb-4 text-pink-500">
             Lost & Found Manager
           </h2>
