@@ -1,0 +1,3 @@
+schema name or controller function name : camelcase
+every js file name : capitalized
+routes : small letters with hyphen(if needed)

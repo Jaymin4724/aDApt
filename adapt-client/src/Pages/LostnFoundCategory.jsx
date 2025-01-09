@@ -1,10 +1,10 @@
 import React from "react";
 import Navbar from "../Components/Navbar";
-export default function LostnFound() {
+export default function LostnFoundCategory() {
   return (
     <div>
       <Navbar></Navbar>
-      <div>LostFound</div>
+      <div>LostFoundCategory</div>
     </div>
   );
 }

@@ -1,17 +1,16 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Navbar from "../Components/Navbar";
 import { TextField, IconButton } from "@mui/material";
 import { Close, Add, Edit, Save, Delete } from "@mui/icons-material";
-
-const staticEmails = [
-  { id: 1, username: "JohnDoe", email: "johndoe@example.com" },
-  { id: 2, username: "JaneSmith", email: "janesmith@example.com" },
-  { id: 3, username: "Admin", email: "admin@example.com" },
-  { id: 4, username: "Support", email: "support@example.com" },
-];
+import {
+  getAllEmails,
+  createEmail,
+  updateEmail,
+  deleteEmail,
+} from "../Services/ImpEmailServices";
 
 export default function ImpMails() {
-  const [emails, setEmails] = useState(staticEmails);
+  const [emails, setEmails] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [editMode, setEditMode] = useState(null);
   const [editedEmail, setEditedEmail] = useState({ username: "", email: "" });
@@ -19,19 +18,34 @@ export default function ImpMails() {
   const [newEmail, setNewEmail] = useState("");
   const [showAddFields, setShowAddFields] = useState(false);
 
-  const handleAdd = () => {
-    const newId = emails.length ? Math.max(...emails.map((e) => e.id)) + 1 : 1;
-
-    const newEmailObject = {
-      id: newId,
-      username: newUsername || "New User",
-      email: newEmail || "newuser@example.com",
+  useEffect(() => {
+    const fetchEmails = async () => {
+      try {
+        const data = await getAllEmails();
+        setEmails(data);
+      } catch (error) {
+        console.error("Error fetching emails:", error);
+      }
     };
 
-    setEmails((prevEmails) => [...prevEmails, newEmailObject]);
+    fetchEmails();
+  }, []);
 
-    setNewUsername("");
-    setNewEmail("");
+  const handleAdd = async () => {
+    try {
+      const newEmailObject = {
+        name: newUsername || "New User",
+        emailId: newEmail || "newuser@example.com",
+      };
+
+      const addedEmail = await createEmail(newEmailObject);
+      setEmails((prevEmails) => [...prevEmails, addedEmail]);
+
+      setNewUsername("");
+      setNewEmail("");
+    } catch (error) {
+      console.error("Error adding email:", error);
+    }
   };
 
   const handleSearch = (event) => {
@@ -40,28 +54,44 @@ export default function ImpMails() {
 
   const handleEdit = (id) => {
     setEditMode(id);
-    const emailToEdit = emails.find((email) => email.id === id);
+    const emailToEdit = emails.find((email) => email._id === id);
     setEditedEmail(emailToEdit);
   };
 
-  const handleSave = (id) => {
-    setEmails((prevEmails) =>
-      prevEmails.map((email) =>
-        email.id === id ? { ...email, ...editedEmail } : email
-      )
-    );
-    setEditMode(null);
-    setEditedEmail({ username: "", email: "" });
+  const handleSave = async (id) => {
+    try {
+      const updatedData = {
+        name: editedEmail.username,
+        emailId: editedEmail.email,
+      };
+
+      const updatedEmail = await updateEmail(id, updatedData);
+      setEmails((prevEmails) =>
+        prevEmails.map((email) =>
+          email._id === id ? { ...email, ...updatedEmail } : email
+        )
+      );
+
+      setEditMode(null);
+      setEditedEmail({ username: "", email: "" });
+    } catch (error) {
+      console.error("Error updating email:", error);
+    }
   };
 
-  const handleDelete = (id) => {
-    setEmails((prevEmails) => prevEmails.filter((email) => email.id !== id));
+  const handleDelete = async (id) => {
+    try {
+      await deleteEmail(id);
+      setEmails((prevEmails) => prevEmails.filter((email) => email._id !== id));
+    } catch (error) {
+      console.error("Error deleting email:", error);
+    }
   };
 
   const filteredEmails = emails.filter(
     (email) =>
-      email.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      email.email.toLowerCase().includes(searchTerm.toLowerCase())
+      email.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      email.emailId.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -105,8 +135,7 @@ export default function ImpMails() {
               />
             </div>
             <button
-              className="bg-blue-500 hover:bg-blue-600 my-3
-               text-lg text-white font-bold p-3 rounded shadow flex items-center gap-2 transition duration-200"
+              className="bg-blue-500 hover:bg-blue-600 my-3 text-lg text-white font-bold p-3 rounded shadow flex items-center gap-2 transition duration-200"
               onClick={handleAdd}
             >
               <Add />
@@ -137,14 +166,14 @@ export default function ImpMails() {
               <tbody>
                 {filteredEmails.map((email, index) => (
                   <tr
-                    key={email.id}
+                    key={email._id}
                     className="hover:bg-gray-50 transition duration-200"
                   >
                     <td className="border border-gray-300 px-4 py-3 text-sm">
                       {index + 1}
                     </td>
                     <td className="border border-gray-300 px-4 py-3 text-sm">
-                      {editMode === email.id ? (
+                      {editMode === email._id ? (
                         <TextField
                           size="small"
                           variant="outlined"
@@ -157,11 +186,11 @@ export default function ImpMails() {
                           }
                         />
                       ) : (
-                        email.username
+                        email.name
                       )}
                     </td>
                     <td className="border border-gray-300 px-4 py-3 text-sm">
-                      {editMode === email.id ? (
+                      {editMode === email._id ? (
                         <TextField
                           size="small"
                           variant="outlined"
@@ -174,28 +203,28 @@ export default function ImpMails() {
                           }
                         />
                       ) : (
-                        email.email
+                        email.emailId
                       )}
                     </td>
                     <td className="border border-gray-300 px-4 py-3 text-sm flex space-x-2">
-                      {editMode === email.id ? (
+                      {editMode === email._id ? (
                         <IconButton
                           color="primary"
-                          onClick={() => handleSave(email.id)}
+                          onClick={() => handleSave(email._id)}
                         >
                           <Save />
                         </IconButton>
                       ) : (
                         <IconButton
                           color="primary"
-                          onClick={() => handleEdit(email.id)}
+                          onClick={() => handleEdit(email._id)}
                         >
                           <Edit />
                         </IconButton>
                       )}
                       <IconButton
                         color="secondary"
-                        onClick={() => handleDelete(email.id)}
+                        onClick={() => handleDelete(email._id)}
                       >
                         <Delete />
                       </IconButton>
