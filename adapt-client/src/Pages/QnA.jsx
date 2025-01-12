@@ -1,5 +1,3 @@
-// QnA.jsx
-
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../Components/Navbar";
@@ -15,17 +13,13 @@ export default function QnA() {
     setSearchTerm(event.target.value.toLowerCase());
   };
 
-  // Filter questions based on selected category and search term
+  // Filter items based on category and search term
   const filteredQuestions = QnAData.questions
     .filter((question) => question.category === selectedCategory)
     .filter((question) => question.question.toLowerCase().includes(searchTerm));
 
   const handleQuestionClick = (id) => {
-    navigate(`/qna/${id}`);
-  };
-
-  const handleAnsweredClick = (id) => {
-    alert(`Question with ID ${id} marked as answered.`);
+    navigate(`/qna/${id}`); // Navigate to a detailed QnA page
   };
 
   return (
@@ -63,7 +57,7 @@ export default function QnA() {
         {/* Questions Display Section */}
         <div className="w-full md:w-3/4 lg:w-5/6 bg-white p-4 overflow-auto shadow-md rounded-lg">
           <h2 className="text-lg font-bold mb-4 border-b pb-2 text-center md:text-left">
-            Questions on {selectedCategory}
+            Questions in {selectedCategory}
           </h2>
 
           {/* Search Bar */}
@@ -96,20 +90,24 @@ export default function QnA() {
                     <strong>Created By:</strong> {question.createdBy}
                   </p>
                   <p className="text-sm text-gray-600 mb-2">
-                    <strong>Timestamp:</strong> {question.timestamp}
+                    <strong>Status:</strong>{" "}
+                    <span
+                      className={`${
+                        question.answered ? "text-green-500" : "text-red-500"
+                      }`}
+                    >
+                      {question.answered ? "Answered" : "Not Answered"}
+                    </span>
                   </p>
-                  <div className="flex justify-between mt-4">
+                  <p className="text-xs text-gray-400">
+                    <strong>Posted At:</strong> {question.timestamp}
+                  </p>
+                  <div className="flex justify-between">
                     <button
                       onClick={() => handleQuestionClick(question.id)}
-                      className="bg-blue-500 hover:bg-blue-600 text-white font-bold px-4 py-2 rounded-lg shadow-md transition-transform transform hover:scale-105"
+                      className="bg-blue-500 hover:bg-blue-600 text-white font-bold px-4 py-2 mt-4 rounded-lg shadow-md transition-transform transform hover:scale-105"
                     >
                       Chat
-                    </button>
-                    <button
-                      onClick={() => handleAnsweredClick(question.id)}
-                      className="bg-green-500 hover:bg-green-600 text-white font-bold px-4 py-2 rounded-lg shadow-md transition-transform transform hover:scale-105"
-                    >
-                      Answered
                     </button>
                   </div>
                 </div>
