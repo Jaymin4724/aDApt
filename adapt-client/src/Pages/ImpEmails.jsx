@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Navbar from "../Components/Navbar";
 import { TextField, IconButton } from "@mui/material";
-import { Close, Add, Edit, Save, Delete } from "@mui/icons-material";
+import { Close, Add, Edit, Save, Delete, Cancel } from "@mui/icons-material";
 import {
   getAllEmails,
   createEmail,
@@ -34,7 +34,7 @@ export default function ImpMails() {
   const handleAdd = async () => {
     try {
       const newEmailObject = {
-        name: newUsername || "New User",
+        username: newUsername || "New User",
         emailId: newEmail || "newuser@example.com",
       };
 
@@ -55,13 +55,18 @@ export default function ImpMails() {
   const handleEdit = (id) => {
     setEditMode(id);
     const emailToEdit = emails.find((email) => email._id === id);
-    setEditedEmail(emailToEdit);
+    if (emailToEdit) {
+      setEditedEmail({
+        username: emailToEdit.username,
+        email: emailToEdit.emailId,
+      });
+    }
   };
 
   const handleSave = async (id) => {
     try {
       const updatedData = {
-        name: editedEmail.username,
+        username: editedEmail.username,
         emailId: editedEmail.email,
       };
 
@@ -88,9 +93,14 @@ export default function ImpMails() {
     }
   };
 
+  const handleCancel = () => {
+    setEditMode(null); // Exit edit mode
+    setEditedEmail({ username: "", email: "" }); // Reset the editedEmail state
+  };
+
   const filteredEmails = emails.filter(
     (email) =>
-      email.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      email.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
       email.emailId.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -186,7 +196,7 @@ export default function ImpMails() {
                           }
                         />
                       ) : (
-                        email.name
+                        email.username
                       )}
                     </td>
                     <td className="border border-gray-300 px-4 py-3 text-sm">
@@ -208,12 +218,20 @@ export default function ImpMails() {
                     </td>
                     <td className="border border-gray-300 px-4 py-3 text-sm flex space-x-2">
                       {editMode === email._id ? (
-                        <IconButton
-                          color="primary"
-                          onClick={() => handleSave(email._id)}
-                        >
-                          <Save />
-                        </IconButton>
+                        <>
+                          <IconButton
+                            color="primary"
+                            onClick={() => handleSave(email._id)}
+                          >
+                            <Save />
+                          </IconButton>
+                          <IconButton
+                            color="secondary"
+                            onClick={handleCancel} // Cancel edit
+                          >
+                            <Cancel />
+                          </IconButton>
+                        </>
                       ) : (
                         <IconButton
                           color="primary"

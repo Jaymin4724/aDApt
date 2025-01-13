@@ -32,7 +32,7 @@ export default function SignupPage() {
           <div className="mb-4">
             <input
               type="text"
-              placeholder="Full Name"
+              placeholder="Username"
               className="w-full px-4 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>

@@ -7,7 +7,7 @@ import FileUpload from "./Components/FileUpload";
 import SharedLibrary from "./Pages/SharedLibrary";
 import QnA from "./Pages/QnA";
 import LostnFound from "./Pages/LostnFound";
-import ImpMails from "./Pages/ImpMails";
+import ImpEmails from "./Pages/ImpEmails";
 
 export default function App() {
   return (
@@ -19,7 +19,7 @@ export default function App() {
         <Route path="/sharedlibrary" element={<SharedLibrary />} />
         <Route path="/qna" element={<QnA />} />
         <Route path="/lostnfound" element={<LostnFound />} />
-        <Route path="/impmails" element={<ImpMails />} />
+        <Route path="/impmails" element={<ImpEmails />} />
         <Route path="/fileupload" element={<FileUpload />} />
       </Routes>
     </Router>

@@ -1,25 +1,25 @@
-import ImportantEmail from "../model/ImportantEmailModel.js";
+import importantEmail from "../model/importantEmailModel.js";
 
 // Get all emails
 const getAllEmails = async (req, res) => {
   try {
-    const impmails = await ImportantEmail.find();
-    res.status(200).json(impmails);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: err.message });
+    const emails = await importantEmail.find();
+    res.status(200).json(emails);
+  } catch (error) {
+    console.error("Error fetching emails:", error);
+    res.status(500).json({ error: error.message });
   }
 };
 
 // Create a new email
 const createEmail = async (req, res) => {
   try {
-    const { name, emailId } = req.body;
-    const newEmail = await ImportantEmail.create({ name, emailId });
+    const { username, emailId } = req.body;
+    const newEmail = await importantEmail.create({ username, emailId });
     res.status(201).json(newEmail);
-  } catch (err) {
-    console.error(err);
-    res.status(400).json({ error: err.message });
+  } catch (error) {
+    console.error("Error creating email:", error);
+    res.status(400).json({ error: error.message });
   }
 };
 
@@ -27,19 +27,19 @@ const createEmail = async (req, res) => {
 const updateEmail = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, emailId } = req.body;
-    const updatedEmail = await ImportantEmail.findByIdAndUpdate(
+    const { username, emailId } = req.body;
+    const updatedEmail = await importantEmail.findByIdAndUpdate(
       id,
-      { name, emailId },
+      { username, emailId },
       { new: true, runValidators: true }
     );
     if (!updatedEmail) {
       return res.status(404).json({ error: "Email not found" });
     }
     res.status(200).json(updatedEmail);
-  } catch (err) {
-    console.error(err);
-    res.status(400).json({ error: err.message });
+  } catch (error) {
+    console.error("Error updating email:", error);
+    res.status(400).json({ error: error.message });
   }
 };
 
@@ -47,14 +47,14 @@ const updateEmail = async (req, res) => {
 const deleteEmail = async (req, res) => {
   try {
     const { id } = req.params;
-    const deletedEmail = await ImportantEmail.findByIdAndDelete(id);
+    const deletedEmail = await importantEmail.findByIdAndDelete(id);
     if (!deletedEmail) {
       return res.status(404).json({ error: "Email not found" });
     }
     res.status(200).json({ message: "Email deleted successfully" });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: err.message });
+  } catch (error) {
+    console.error("Error deleting email:", error);
+    res.status(500).json({ error: error.message });
   }
 };
 

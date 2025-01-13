@@ -4,13 +4,14 @@ import {
   createEmail,
   updateEmail,
   deleteEmail,
-} from "../controller/ImportantEmailController.js";
+} from "../controller/importantEmailController.js";
 
-const ImportantEmailRouter = Router();
+const importantEmailRouter = Router();
 
-ImportantEmailRouter.get("/", getAllEmails);
-ImportantEmailRouter.post("/", createEmail);
-ImportantEmailRouter.patch("/:id", updateEmail);
-ImportantEmailRouter.delete("/:id", deleteEmail);
+// Define routes for important emails
+importantEmailRouter.get("/", getAllEmails);
+importantEmailRouter.post("/", createEmail);
+importantEmailRouter.patch("/:id", updateEmail);
+importantEmailRouter.delete("/:id", deleteEmail);
 
-export { ImportantEmailRouter };
+export { importantEmailRouter };

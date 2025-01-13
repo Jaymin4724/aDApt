@@ -1,29 +1,27 @@
-// importantEmailModel.js
 import mongoose from "mongoose";
 
 const importantEmailSchema = new mongoose.Schema(
   {
-    name: {
+    username: {
       type: String,
       required: true,
-      trim: true,
     },
     emailId: {
       type: String,
       required: true,
       unique: true,
-      match: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+      match: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, // Valid email regex
     },
     createdBy: {
       type: String,
-      default: 0,
+      default: "0",
     },
   },
   {
-    timestamps: true,
+    timestamps: true, // Adds createdAt and updatedAt fields
   }
 );
 
-const ImportantEmail = mongoose.model("ImportantEmail", importantEmailSchema);
+const importantEmail = mongoose.model("importantEmail", importantEmailSchema);
 
-export default ImportantEmail;
+export default importantEmail;
