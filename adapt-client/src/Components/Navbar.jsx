@@ -1,6 +1,6 @@
 import React, { useContext, useState } from "react";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion"; // Importing motion from framer-motion
+import { motion } from "framer-motion";
 import logo from "../assets/logo-transparent.png";
 import { AuthContext } from "../Context/AuthContext";
 import PersonIcon from "@mui/icons-material/Person";
@@ -8,13 +8,13 @@ import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 
 export default function Navbar() {
-  const location = useLocation(); // Get the current location
+  const location = useLocation();
   const navigate = useNavigate();
-  const { isLoggedIn, logout } = useContext(AuthContext);
-  const [menuOpen, setMenuOpen] = useState(false); // State for menu visibility
+  const { isLoggedIn, logout, username } = useContext(AuthContext);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const toggleMenu = () => {
-    setMenuOpen(!menuOpen); // Toggle the menu
+    setMenuOpen(!menuOpen);
   };
   return (
     <div className="flex flex-wrap items-center justify-between p-3 m-3 bg-white shadow-2xl rounded-md">
@@ -23,10 +23,6 @@ export default function Navbar() {
         <img src={logo} alt="logo" className="h-10 w-10" />
         <span className="text-3xl font-extralight">aDApt</span>
       </Link>
-
-      {/* Get Started Button */}
-
-      {/* Get Started or Profile Button */}
 
       {!isLoggedIn &&
         location.pathname !== "/login" &&
@@ -57,7 +53,7 @@ export default function Navbar() {
             onClick={toggleMenu} // Open/close the menu
           >
             <PersonIcon />
-            Jaymin Dave
+            {username}
           </motion.div>
 
           {/* Dropdown Menu */}

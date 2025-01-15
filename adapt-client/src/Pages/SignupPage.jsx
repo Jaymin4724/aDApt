@@ -1,11 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import Navbar from "../Components/Navbar";
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
 import { IconButton, InputAdornment } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import { signUp } from "../Services/authServices";
-import { Error } from "../Components/Toast";
+import axios from "axios";
+import { Success, Error } from "../Components/Toast";
+import { AuthContext } from "../Context/AuthContext";
+
+const baseURL = "http://localhost:5000/api";
 
 export default function SignupPage() {
   const [username, setUsername] = useState("");
@@ -13,9 +16,34 @@ export default function SignupPage() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+  const { login } = useContext(AuthContext);
 
   const handleTogglePasswordVisibility = () => {
     setShowPassword((prev) => !prev);
+  };
+
+  const signUp = async (data) => {
+    try {
+      console.log(data);
+      const response = await axios.post(`${baseURL}/auth/signup`, data);
+      const token = response.data.token;
+      const userDetails = response.data.data;
+
+      localStorage.setItem("username", userDetails.username);
+      localStorage.setItem("emailId", userDetails.emailId);
+      localStorage.setItem("token", token);
+      localStorage.setItem("isLoggedIn", true);
+
+      login(token, userDetails.username, userDetails.emailId, true);
+      console.log(token, userDetails.username, userDetails.emailId, true);
+      Success("Signup successful");
+    } catch (error) {
+      const errorMessage =
+        (error.response && error.response.data && error.response.data.error) ||
+        "Failed to sign up. Please try again.";
+      Error(errorMessage);
+      console.error("Error creating user:", error.message);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -31,7 +59,7 @@ export default function SignupPage() {
       emailId: email.trim().toLowerCase(),
       password,
     };
-    console.log(userData);
+
     try {
       await signUp(userData);
       navigate("/");

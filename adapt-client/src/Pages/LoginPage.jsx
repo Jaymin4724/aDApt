@@ -1,21 +1,47 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import Navbar from "../Components/Navbar";
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { IconButton, InputAdornment } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import { useNavigate } from "react-router-dom";
-import { logIn } from "../Services/authServices";
-import { Error } from "../Components/Toast";
+import axios from "axios";
+import { Success, Error } from "../Components/Toast";
+import { AuthContext } from "../Context/AuthContext";
+
+const baseURL = "http://localhost:5000/api";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
+  const { login } = useContext(AuthContext);
 
   const handleTogglePasswordVisibility = () => {
     setShowPassword((prev) => !prev);
+  };
+
+  const logIn = async (data) => {
+    try {
+      const response = await axios.post(`${baseURL}/auth/login`, data);
+      const token = response.data.token;
+      const userDetails = response.data.data;
+
+      localStorage.setItem("username", userDetails.username);
+      localStorage.setItem("emailId", userDetails.emailId);
+      localStorage.setItem("token", token);
+      localStorage.setItem("isLoggedIn", true);
+
+      login(token, userDetails.username, userDetails.emailId, true);
+      console.log(token, userDetails.username, userDetails.emailId, true);
+      Success("Login successful");
+    } catch (error) {
+      const errorMessage =
+        (error.response && error.response.data && error.response.data.error) ||
+        "Failed to log in. Please check your credentials.";
+      Error(errorMessage);
+      console.error("Error logging in:", error.message);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -24,10 +50,12 @@ export default function LoginPage() {
       Error("Please fill in all fields");
       return;
     }
+
     const userData = {
       emailId: email.trim().toLowerCase(),
       password,
     };
+
     try {
       await logIn(userData);
       navigate("/");

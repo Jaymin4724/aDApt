@@ -4,6 +4,11 @@ import userModel from "../model/userModel.js";
 
 const signUp = async (req, res) => {
   try {
+    const existingUser = await userModel.findOne({ emailId: req.body.emailId });
+    if (existingUser) {
+      return res.status(400).json({ error: "Email already in use" });
+    }
+
     const newUser = new userModel(req.body);
     const token = jwt.sign(
       { email: req.body.emailId, username: req.body.username },
@@ -15,8 +20,8 @@ const signUp = async (req, res) => {
     const hash = hashSync(req.body.password, 10);
     newUser.token = token;
     newUser.password = hash;
-    const savedUser = await newUser.save();
-    res.status(201).json(savedUser);
+    const data = await newUser.save();
+    res.status(201).json({ message: "Signup Successful", token, data });
     // 201 means creation successfull
   } catch (err) {
     console.error("Error Creating User:", err);

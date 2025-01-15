@@ -1,13 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Navbar from "../Components/Navbar";
 import { TextField, IconButton } from "@mui/material";
 import { Close, Add, Edit, Save, Delete, Cancel } from "@mui/icons-material";
-import {
-  getAllEmails,
-  createEmail,
-  updateEmail,
-  deleteEmail,
-} from "../Services/ImpEmailServices";
+import axios from "axios";
+import { Success, Error } from "../Components/Toast";
+import { AuthContext } from "../Context/AuthContext";
+
+const baseURL = "http://localhost:5000/api";
 
 export default function ImpMails() {
   const [emails, setEmails] = useState([]);
@@ -17,34 +16,57 @@ export default function ImpMails() {
   const [newUsername, setNewUsername] = useState("");
   const [newEmail, setNewEmail] = useState("");
   const [showAddFields, setShowAddFields] = useState(false);
+  const { token } = useContext(AuthContext);
 
   useEffect(() => {
     const fetchEmails = async () => {
       try {
-        const data = await getAllEmails();
-        setEmails(data);
+        const response = await axios.get(`${baseURL}/imp-emails`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setEmails(response.data);
       } catch (error) {
-        console.error("Error fetching emails:", error);
+        console.error("Error fetching important emails:", error);
+        Error("Failed to fetch emails");
       }
     };
 
     fetchEmails();
-  }, []);
+  }, [token]);
 
   const handleAdd = async () => {
+    if (!newUsername.trim() || !newEmail.trim()) {
+      Error("Please fill in both username and email fields.");
+      return;
+    }
+
     try {
       const newEmailObject = {
-        username: newUsername || "New User",
-        emailId: newEmail || "newuser@example.com",
+        username: newUsername.trim(),
+        emailId: newEmail.trim(),
       };
 
-      const addedEmail = await createEmail(newEmailObject);
-      setEmails((prevEmails) => [...prevEmails, addedEmail]);
+      const response = await axios.post(
+        `${baseURL}/imp-emails`,
+        newEmailObject,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      setEmails((prevEmails) => [...prevEmails, response.data]);
 
       setNewUsername("");
       setNewEmail("");
+      setShowAddFields(false);
+      Success("Email added successfully!");
     } catch (error) {
-      console.error("Error adding email:", error);
+      console.error("Error creating a new email:", error);
+      Error("Failed to add the email. Please try again.");
     }
   };
 
@@ -64,38 +86,61 @@ export default function ImpMails() {
   };
 
   const handleSave = async (id) => {
+    if (!editedEmail.username.trim() || !editedEmail.email.trim()) {
+      Error("Please fill in both username and email fields.");
+      return;
+    }
+
     try {
       const updatedData = {
         username: editedEmail.username,
         emailId: editedEmail.email,
       };
 
-      const updatedEmail = await updateEmail(id, updatedData);
+      const response = await axios.patch(
+        `${baseURL}/imp-emails/${id}`,
+        updatedData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
       setEmails((prevEmails) =>
         prevEmails.map((email) =>
-          email._id === id ? { ...email, ...updatedEmail } : email
+          email._id === id ? { ...email, ...response.data } : email
         )
       );
 
       setEditMode(null);
       setEditedEmail({ username: "", email: "" });
+      Success("Email updated successfully!");
     } catch (error) {
       console.error("Error updating email:", error);
+      Error("Failed to update the email. Please try again.");
     }
   };
 
   const handleDelete = async (id) => {
     try {
-      await deleteEmail(id);
+      await axios.delete(`${baseURL}/imp-emails/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
       setEmails((prevEmails) => prevEmails.filter((email) => email._id !== id));
+      Success("Email deleted successfully!");
     } catch (error) {
       console.error("Error deleting email:", error);
+      Error("Failed to delete the email. Please try again.");
     }
   };
 
   const handleCancel = () => {
-    setEditMode(null); // Exit edit mode
-    setEditedEmail({ username: "", email: "" }); // Reset the editedEmail state
+    setEditMode(null);
+    setEditedEmail({ username: "", email: "" });
   };
 
   const filteredEmails = emails.filter(
@@ -225,10 +270,7 @@ export default function ImpMails() {
                           >
                             <Save />
                           </IconButton>
-                          <IconButton
-                            color="secondary"
-                            onClick={handleCancel} // Cancel edit
-                          >
+                          <IconButton color="secondary" onClick={handleCancel}>
                             <Cancel />
                           </IconButton>
                         </>
