@@ -23,8 +23,7 @@ async function main() {
 server.use(cors());
 server.use(express.json());
 server.use("/api/auth", authRouter);
-// server.use("/api/imp-emails", authMiddleware, importantEmailRouter);
-server.use("/api/imp-emails", importantEmailRouter);
+server.use("/api/imp-emails", authMiddleware, importantEmailRouter);
 
 server.listen(process.env.PORT, () => {
   console.log(`Server started at http://localhost:${process.env.PORT}`);
