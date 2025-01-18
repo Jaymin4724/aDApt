@@ -16,7 +16,7 @@ export default function ImpMails() {
   const [newUsername, setNewUsername] = useState("");
   const [newEmail, setNewEmail] = useState("");
   const [showAddFields, setShowAddFields] = useState(false);
-  const { token } = useContext(AuthContext);
+  const { token, isAdmin } = useContext(AuthContext);
 
   useEffect(() => {
     const fetchEmails = async () => {
@@ -164,12 +164,14 @@ export default function ImpMails() {
             value={searchTerm}
             onChange={handleSearch}
           />
-          <button
-            className="bg-gray-300 hover:bg-gray-400 text-black p-3 rounded shadow transition duration-200"
-            onClick={() => setShowAddFields(!showAddFields)}
-          >
-            {showAddFields ? <Close /> : <Add />}
-          </button>
+          {isAdmin && (
+            <button
+              className="bg-gray-300 hover:bg-gray-400 text-black p-3 rounded shadow transition duration-200"
+              onClick={() => setShowAddFields(!showAddFields)}
+            >
+              {showAddFields ? <Close /> : <Add />}
+            </button>
+          )}
         </div>
         {showAddFields && (
           <>
@@ -213,9 +215,11 @@ export default function ImpMails() {
                   <th className="border border-gray-300 px-4 py-3 text-left text-sm font-semibold text-gray-600">
                     Email
                   </th>
-                  <th className="border border-gray-300 px-4 py-3 text-left text-sm font-semibold text-gray-600">
-                    Actions
-                  </th>
+                  {isAdmin && (
+                    <th className="border border-gray-300 px-4 py-3 text-left text-sm font-semibold text-gray-600">
+                      Actions
+                    </th>
+                  )}
                 </tr>
               </thead>
               <tbody>
@@ -261,41 +265,46 @@ export default function ImpMails() {
                         email.emailId
                       )}
                     </td>
-                    <td className="border border-gray-300 px-4 py-3 text-sm flex space-x-2">
-                      {editMode === email._id ? (
-                        <>
+                    {isAdmin && (
+                      <td className="border border-gray-300 px-4 py-3 text-sm flex space-x-2">
+                        {editMode === email._id ? (
+                          <>
+                            <IconButton
+                              color="primary"
+                              onClick={() => handleSave(email._id)}
+                            >
+                              <Save />
+                            </IconButton>
+                            <IconButton
+                              color="secondary"
+                              onClick={handleCancel}
+                            >
+                              <Cancel />
+                            </IconButton>
+                          </>
+                        ) : (
                           <IconButton
                             color="primary"
-                            onClick={() => handleSave(email._id)}
+                            onClick={() => handleEdit(email._id)}
                           >
-                            <Save />
+                            <Edit />
                           </IconButton>
-                          <IconButton color="secondary" onClick={handleCancel}>
-                            <Cancel />
-                          </IconButton>
-                        </>
-                      ) : (
+                        )}
                         <IconButton
-                          color="primary"
-                          onClick={() => handleEdit(email._id)}
+                          color="secondary"
+                          onClick={() => handleDelete(email._id)}
                         >
-                          <Edit />
+                          <Delete />
                         </IconButton>
-                      )}
-                      <IconButton
-                        color="secondary"
-                        onClick={() => handleDelete(email._id)}
-                      >
-                        <Delete />
-                      </IconButton>
-                    </td>
+                      </td>
+                    )}
                   </tr>
                 ))}
               </tbody>
             </table>
           ) : (
             <div className="text-gray-500 text-center py-6">
-              No emails found. Use the "Add New" button to create one!
+              No emails found.
             </div>
           )}
         </div>

@@ -1,10 +1,12 @@
 import React, { createContext, useEffect, useState } from "react";
-
 const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
   const [isLoggedIn, setLoggedIn] = useState(() => {
     return localStorage.getItem("isLoggedIn") === "true";
+  });
+  const [isAdmin, setIsAdmin] = useState(() => {
+    return localStorage.getItem("isAdmin") === "true";
   });
   const [username, setUsername] = useState(() => {
     return localStorage.getItem("username") || "";
@@ -17,17 +19,19 @@ const AuthProvider = ({ children }) => {
   });
 
   useEffect(() => {
-    localStorage.setItem("isLoggedIn", isLoggedIn);
+    localStorage.setItem("token", token);
     localStorage.setItem("username", username);
     localStorage.setItem("emailId", emailId);
-    localStorage.setItem("token", token);
-  }, [isLoggedIn, username, emailId, token]);
+    localStorage.setItem("isLoggedIn", isLoggedIn);
+    localStorage.setItem("isAdmin", isAdmin);
+  }, [token, username, emailId, isLoggedIn, isAdmin]);
 
-  const login = (token, username, emailId, isLoggedIn) => {
+  const login = (token, username, emailId, isLoggedIn, isAdmin) => {
     setToken(token);
     setUsername(username);
     setEmailId(emailId);
     setLoggedIn(isLoggedIn);
+    setIsAdmin(isAdmin);
   };
 
   // Logout function
@@ -46,6 +50,8 @@ const AuthProvider = ({ children }) => {
         logout,
         isLoggedIn,
         setLoggedIn,
+        isAdmin,
+        setIsAdmin,
         username,
         setUsername,
         emailId,

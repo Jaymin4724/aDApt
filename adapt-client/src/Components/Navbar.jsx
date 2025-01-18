@@ -4,13 +4,14 @@ import { motion } from "framer-motion";
 import logo from "../assets/logo-transparent.png";
 import { AuthContext } from "../Context/AuthContext";
 import PersonIcon from "@mui/icons-material/Person";
+import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 
 export default function Navbar() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { isLoggedIn, logout, username } = useContext(AuthContext);
+  const { isAdmin, isLoggedIn, logout, username } = useContext(AuthContext);
   const [menuOpen, setMenuOpen] = useState(false);
 
   const toggleMenu = () => {
@@ -52,7 +53,7 @@ export default function Navbar() {
             transition={{ type: "spring", stiffness: 300 }}
             onClick={toggleMenu} // Open/close the menu
           >
-            <PersonIcon />
+            {!isAdmin ? <PersonIcon /> : <ManageAccountsIcon />}
             {username}
           </motion.div>
 

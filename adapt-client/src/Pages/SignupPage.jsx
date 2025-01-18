@@ -32,10 +32,23 @@ export default function SignupPage() {
       localStorage.setItem("username", userDetails.username);
       localStorage.setItem("emailId", userDetails.emailId);
       localStorage.setItem("token", token);
+      localStorage.setItem("isAdmin", userDetails.isAdmin);
       localStorage.setItem("isLoggedIn", true);
 
-      login(token, userDetails.username, userDetails.emailId, true);
-      console.log(token, userDetails.username, userDetails.emailId, true);
+      login(
+        token,
+        userDetails.username,
+        userDetails.emailId,
+        true,
+        userDetails.isAdmin
+      );
+      console.log(
+        token,
+        userDetails.username,
+        userDetails.emailId,
+        true,
+        userDetails.isAdmin
+      );
       Success("Signup successful");
     } catch (error) {
       const errorMessage =
