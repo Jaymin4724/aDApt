@@ -7,6 +7,9 @@ import PersonIcon from "@mui/icons-material/Person";
 import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
+import SettingsIcon from "@mui/icons-material/Settings";
+import MarkEmailUnreadIcon from "@mui/icons-material/MarkEmailUnread";
+import LogoutIcon from "@mui/icons-material/Logout";
 
 export default function Navbar() {
   const location = useLocation();
@@ -62,22 +65,35 @@ export default function Navbar() {
             <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-300 shadow-xl rounded-sm z-50">
               <ul className="flex flex-col divide-y divide-gray-200">
                 {location.pathname !== "/impmails" && (
-                  <li className="hover:bg-gray-50 px-4 py-2">
+                  <li className="hover:bg-gray-50 px-4 py-2 cursor-pointer flex items-center gap-2">
+                    <MarkEmailUnreadIcon />
                     <Link
                       to="/impmails"
                       className="block text-gray-800 font-medium"
                     >
-                      Important Emails
+                      Imp Emails
+                    </Link>
+                  </li>
+                )}
+                {location.pathname !== "/admin" && isAdmin && (
+                  <li className="hover:bg-gray-50 px-4 py-2 cursor-pointer flex items-center gap-2">
+                    <SettingsIcon />
+                    <Link
+                      to="/admin"
+                      className="block text-gray-800 font-medium"
+                    >
+                      Admin Options
                     </Link>
                   </li>
                 )}
                 <li
-                  className="hover:bg-gray-50 px-4 py-2 cursor-pointer"
+                  className="hover:bg-gray-50 px-4 py-2 cursor-pointer flex items-center gap-2"
                   onClick={() => {
                     logout();
                     navigate("/");
                   }}
                 >
+                  <LogoutIcon />
                   <span className="block text-gray-800 font-medium">
                     Logout
                   </span>

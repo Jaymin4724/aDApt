@@ -8,6 +8,9 @@ const AuthProvider = ({ children }) => {
   const [isAdmin, setIsAdmin] = useState(() => {
     return localStorage.getItem("isAdmin") === "true";
   });
+  const [id, setId] = useState(() => {
+    return localStorage.getItem("id") || "";
+  });
   const [username, setUsername] = useState(() => {
     return localStorage.getItem("username") || "";
   });
@@ -20,14 +23,16 @@ const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     localStorage.setItem("token", token);
+    localStorage.setItem("id", id);
     localStorage.setItem("username", username);
     localStorage.setItem("emailId", emailId);
     localStorage.setItem("isLoggedIn", isLoggedIn);
     localStorage.setItem("isAdmin", isAdmin);
-  }, [token, username, emailId, isLoggedIn, isAdmin]);
+  }, [token, id, username, emailId, isLoggedIn, isAdmin]);
 
-  const login = (token, username, emailId, isLoggedIn, isAdmin) => {
+  const login = (token, id, username, emailId, isLoggedIn, isAdmin) => {
     setToken(token);
+    setId(id);
     setUsername(username);
     setEmailId(emailId);
     setLoggedIn(isLoggedIn);

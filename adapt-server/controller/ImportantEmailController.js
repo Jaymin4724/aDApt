@@ -1,6 +1,5 @@
 import importantEmail from "../model/importantEmailModel.js";
 
-// Get all emails
 const getAllEmails = async (req, res) => {
   try {
     const emails = await importantEmail.find();
@@ -11,7 +10,6 @@ const getAllEmails = async (req, res) => {
   }
 };
 
-// Create a new email
 const createEmail = async (req, res) => {
   try {
     const { username, emailId } = req.body;
@@ -23,7 +21,6 @@ const createEmail = async (req, res) => {
   }
 };
 
-// Update email by ID
 const updateEmail = async (req, res) => {
   try {
     const { id } = req.params;
@@ -43,7 +40,6 @@ const updateEmail = async (req, res) => {
   }
 };
 
-// Delete email by ID
 const deleteEmail = async (req, res) => {
   try {
     const { id } = req.params;

@@ -2,6 +2,19 @@ import jwt from "jsonwebtoken";
 import { hashSync, compareSync } from "bcrypt";
 import userModel from "../model/userModel.js";
 
+const getAllUsers = async (req, res) => {
+  try {
+    const userDetails = await userModel.find();
+    if (!userDetails) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.status(200).json(userDetails);
+  } catch (error) {
+    console.error("Error Fetching User:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
 const signUp = async (req, res) => {
   try {
     const existingUser = await userModel.findOne({ emailId: req.body.emailId });
@@ -60,4 +73,4 @@ const logIn = async (req, res) => {
   }
 };
 
-export { signUp, logIn };
+export { signUp, logIn, getAllUsers };

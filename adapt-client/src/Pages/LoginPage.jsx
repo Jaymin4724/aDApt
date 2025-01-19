@@ -26,14 +26,17 @@ export default function LoginPage() {
       const response = await axios.post(`${baseURL}/auth/login`, data);
       const token = response.data.token;
       const userDetails = response.data.data;
+
+      localStorage.setItem("token", token);
+      localStorage.setItem("id", userDetails._id);
       localStorage.setItem("username", userDetails.username);
       localStorage.setItem("emailId", userDetails.emailId);
-      localStorage.setItem("token", token);
       localStorage.setItem("isAdmin", userDetails.isAdmin);
       localStorage.setItem("isLoggedIn", true);
 
       login(
         token,
+        userDetails._id,
         userDetails.username,
         userDetails.emailId,
         true,
@@ -41,6 +44,7 @@ export default function LoginPage() {
       );
       console.log(
         token,
+        userDetails._id,
         userDetails.username,
         userDetails.emailId,
         true,

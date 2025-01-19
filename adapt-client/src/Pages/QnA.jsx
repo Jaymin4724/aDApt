@@ -1,26 +1,77 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../Components/Navbar";
-import QnAData from "../Data/QnAData"; // Import the QnA data
 import { TextField } from "@mui/material";
+import axios from "axios";
+import { AuthContext } from "../Context/AuthContext";
+
+const baseURL = "http://localhost:5000/api";
 
 export default function QnA() {
-  const [selectedCategory, setSelectedCategory] = useState("C Programming");
+  const [selectedCategory, setSelectedCategory] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const [categories, setCategories] = useState([]);
+  const [questions, setQuestions] = useState([]);
+  const [users, setUsers] = useState([]);
   const navigate = useNavigate();
+  const { token } = useContext(AuthContext);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get(`${baseURL}/qna/categories`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const fetchedCategories = response.data;
+        setCategories(fetchedCategories);
+
+        if (fetchedCategories.length > 0) {
+          setSelectedCategory(fetchedCategories[0]._id);
+        }
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    };
+
+    const fetchQuestions = async () => {
+      try {
+        const response = await axios.get(`${baseURL}/qna/questions`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setQuestions(response.data);
+      } catch (error) {
+        console.error("Error fetching questions:", error);
+      }
+    };
+
+    const fetchUsers = async () => {
+      try {
+        const response = await axios.get(`${baseURL}/auth/users`);
+        setUsers(response.data);
+        console.log(response.data);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
+    };
+    fetchCategories();
+    fetchQuestions();
+    fetchUsers();
+  }, [token]);
 
   const handleSearch = (event) => {
     setSearchTerm(event.target.value.toLowerCase());
   };
 
-  // Filter items based on category and search term
-  const filteredQuestions = QnAData.questions
-    .filter((question) => question.category === selectedCategory)
-    .filter((question) => question.question.toLowerCase().includes(searchTerm));
-
   const handleQuestionClick = (id) => {
     navigate(`/qna/${id}`); // Navigate to a detailed QnA page
   };
+
+  // Filter items based on category and search term
+  const filteredQuestions = questions
+    .filter((question) => question.category === selectedCategory)
+    .filter((question) => question.question.toLowerCase().includes(searchTerm));
 
   return (
     <div className="w-full">
@@ -32,23 +83,17 @@ export default function QnA() {
             Categories
           </h2>
           <div className="flex flex-wrap gap-2 md:block">
-            {[
-              "C Programming",
-              "JavaScript",
-              "Web Development",
-              "Data Structures",
-              "Python",
-            ].map((category) => (
+            {categories.map((category) => (
               <button
-                key={category}
-                onClick={() => setSelectedCategory(category)}
+                key={category._id}
+                onClick={() => setSelectedCategory(category._id)}
                 className={`block w-full text-left px-4 py-2 mb-2 rounded-lg transition-colors ${
-                  selectedCategory === category
+                  selectedCategory === category._id
                     ? "bg-blue-500 text-white"
                     : "bg-gray-100 hover:bg-gray-200"
                 }`}
               >
-                {category}
+                {category.name}
               </button>
             ))}
           </div>
@@ -57,13 +102,17 @@ export default function QnA() {
         {/* Questions Display Section */}
         <div className="w-full md:w-3/4 lg:w-5/6 bg-white p-4 overflow-auto shadow-md rounded-lg">
           <h2 className="text-lg font-bold mb-4 border-b pb-2 text-center md:text-left">
-            Questions in {selectedCategory}
+            Questions in{" "}
+            {categories.find((cat) => cat._id === selectedCategory)?.name || ""}
           </h2>
 
           {/* Search Bar */}
           <div className="mb-5">
             <TextField
-              label={`Search questions in ${selectedCategory}`}
+              label={`Search questions in ${
+                categories.find((cat) => cat._id === selectedCategory)?.name ||
+                "this category"
+              }`}
               variant="outlined"
               fullWidth
               value={searchTerm}
@@ -75,7 +124,7 @@ export default function QnA() {
             {filteredQuestions.length > 0 ? (
               filteredQuestions.map((question) => (
                 <div
-                  key={question.id}
+                  key={question._id}
                   className="border rounded-lg shadow-md p-4 bg-gray-50 hover:bg-gray-100 transition-transform transform hover:scale-105"
                 >
                   <img
@@ -87,7 +136,9 @@ export default function QnA() {
                     {question.question}
                   </h3>
                   <p className="text-sm text-gray-600 mb-2">
-                    <strong>Created By:</strong> {question.createdBy}
+                    <strong>Created By:</strong>{" "}
+                    {users.find((user) => user._id === question.createdBy)
+                      ?.username || "Unknown"}
                   </p>
                   <p className="text-sm text-gray-600 mb-2">
                     <strong>Status:</strong>{" "}
@@ -100,11 +151,12 @@ export default function QnA() {
                     </span>
                   </p>
                   <p className="text-xs text-gray-400">
-                    <strong>Posted At:</strong> {question.timestamp}
+                    <strong>Posted At:</strong>{" "}
+                    {new Date(question.createdAt).toLocaleString()}
                   </p>
                   <div className="flex justify-between">
                     <button
-                      onClick={() => handleQuestionClick(question.id)}
+                      onClick={() => handleQuestionClick(question._id)}
                       className="bg-blue-500 hover:bg-blue-600 text-white font-bold px-4 py-2 mt-4 rounded-lg shadow-md transition-transform transform hover:scale-105"
                     >
                       Chat

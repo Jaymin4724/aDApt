@@ -8,7 +8,7 @@ import SharedLibrary from "./Pages/SharedLibrary";
 import QnA from "./Pages/QnA";
 import LostnFound from "./Pages/LostnFound";
 import ImpEmails from "./Pages/ImpEmails";
-
+import Admin from "./Pages/Admin";
 export default function App() {
   return (
     <Router>
@@ -21,6 +21,7 @@ export default function App() {
         <Route path="/lostnfound" element={<LostnFound />} />
         <Route path="/impmails" element={<ImpEmails />} />
         <Route path="/fileupload" element={<FileUpload />} />
+        <Route path="/admin" element={<Admin></Admin>}></Route>
       </Routes>
     </Router>
   );
