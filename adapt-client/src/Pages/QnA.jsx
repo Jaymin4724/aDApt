@@ -14,8 +14,7 @@ export default function QnA() {
   const [questions, setQuestions] = useState([]);
   const [users, setUsers] = useState([]);
   const navigate = useNavigate();
-  const { token } = useContext(AuthContext);
-
+  const { token, id } = useContext(AuthContext);
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -161,6 +160,11 @@ export default function QnA() {
                     >
                       Chat
                     </button>
+                    {question.createdBy === id && (
+                      <button className="bg-green-500 hover:bg-green-600 text-white font-bold px-4 py-2 mt-4 rounded-lg shadow-md transition-transform transform hover:scale-105">
+                        Edit
+                      </button>
+                    )}
                   </div>
                 </div>
               ))

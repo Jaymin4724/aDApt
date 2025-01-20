@@ -57,6 +57,8 @@ const AuthProvider = ({ children }) => {
         setLoggedIn,
         isAdmin,
         setIsAdmin,
+        id,
+        setId,
         username,
         setUsername,
         emailId,

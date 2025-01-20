@@ -60,4 +60,126 @@ const createQuestion = async (req, res) => {
   }
 };
 
-export { getAllCategories, getAllQuestions, createCategory, createQuestion };
+const editCategory = async (req, res) => {
+  const { id } = req.params;
+  const { name } = req.body;
+
+  if (!id || !name) {
+    return res.status(400).json({ error: "Category ID and name are required" });
+  }
+
+  try {
+    const existingCategory = await QnACategory.findOne({ name });
+    if (existingCategory) {
+      return res.status(400).json({ error: "Category name already exists" });
+    }
+
+    const updatedCategory = await QnACategory.findByIdAndUpdate(
+      id,
+      { name },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedCategory) {
+      return res.status(404).json({ error: "Category not found" });
+    }
+
+    res.status(200).json(updatedCategory);
+  } catch (error) {
+    console.log("Error updating category:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+const editQuestion = async (req, res) => {
+  const { id } = req.params;
+  const { question, photo, description, answered, category } = req.body;
+
+  if (!id) {
+    return res.status(400).json({ error: "Question ID is required" });
+  }
+
+  try {
+    const updateFields = {};
+    if (question) updateFields.question = question;
+    if (photo) updateFields.photo = photo;
+    if (description) updateFields.description = description;
+    if (answered !== undefined) updateFields.answered = answered;
+    if (category) updateFields.category = category;
+
+    const updatedQuestion = await QnAQuestion.findByIdAndUpdate(
+      id,
+      updateFields,
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedQuestion) {
+      return res.status(404).json({ error: "Question not found" });
+    }
+
+    res.status(200).json(updatedQuestion);
+  } catch (error) {
+    console.log("Error updating question:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+const deleteCategory = async (req, res) => {
+  const { id } = req.params;
+
+  if (!id) {
+    return res.status(400).json({ error: "Category ID is required" });
+  }
+
+  try {
+    // Find the category to ensure it exists
+    const category = await QnACategory.findById(id);
+    if (!category) {
+      return res.status(404).json({ error: "Category not found" });
+    }
+
+    // Delete all questions related to the category
+    await QnAQuestion.deleteMany({ category: id });
+
+    // Delete the category itself
+    await QnACategory.findByIdAndDelete(id);
+
+    res.status(200).json({
+      message: "Category and its related questions deleted successfully",
+    });
+  } catch (error) {
+    console.log("Error deleting category and related questions:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+const deleteQuestion = async (req, res) => {
+  const { id } = req.params;
+
+  if (!id) {
+    return res.status(400).json({ error: "Question ID is required" });
+  }
+
+  try {
+    const deletedQuestion = await QnAQuestion.findByIdAndDelete(id);
+    if (!deletedQuestion) {
+      return res.status(404).json({ error: "Question not found" });
+    }
+
+    res.status(200).json({ message: "Question deleted successfully" });
+  } catch (error) {
+    console.log("Error deleting question:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export {
+  getAllCategories,
+  getAllQuestions,
+  createCategory,
+  createQuestion,
+  editCategory,
+  editQuestion,
+  deleteCategory,
+  deleteQuestion,
+};
