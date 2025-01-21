@@ -1,21 +1,26 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
+
 const FileUpload = () => {
-  const [files, setFiles] = useState([]);
+  const [file, setFile] = useState(null);
   const [uploadStatus, setUploadStatus] = useState("");
   const [isDragging, setIsDragging] = useState(false);
+  const [uploadedImage, setUploadedImage] = useState(""); // contains URL
 
   const handleFileChange = (e) => {
-    setFiles([...e.target.files]); // Update files with the selected ones
+    const selectedFile = e.target.files[0];
+    setFile(selectedFile); // Update with the selected file
     setUploadStatus(""); // Reset upload status
+    setUploadedImage(""); // Reset uploaded image
   };
 
   const handleDrop = (e) => {
     e.preventDefault();
     setIsDragging(false);
-    const droppedFiles = Array.from(e.dataTransfer.files);
-    setFiles((prevFiles) => [...prevFiles, ...droppedFiles]); // Append dropped files to the existing ones
+    const droppedFile = e.dataTransfer.files[0]; // Accept only the first file
+    setFile(droppedFile);
     setUploadStatus(""); // Reset upload status
+    setUploadedImage(""); // Reset uploaded image
   };
 
   const handleDragOver = (e) => {
@@ -27,27 +32,39 @@ const FileUpload = () => {
     setIsDragging(false);
   };
 
-  const handleUpload = () => {
-    if (files.length === 0) {
-      setUploadStatus("Please select files to upload.");
+  const handleUpload = async () => {
+    if (!file) {
+      setUploadStatus("Please select a file to upload.");
       return;
     }
 
-    // Simulating file upload process
     const formData = new FormData();
-    files.forEach((file) => formData.append("files", file));
+    formData.append("file", file);
 
-    // Replace the below code with actual API call
-    setTimeout(() => {
-      setUploadStatus("All files uploaded successfully!");
-    }, 2000);
+    try {
+      const response = await fetch("http://localhost:5000/api/file/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        setUploadStatus("File uploaded successfully!");
+        setUploadedImage(data.url); // Use the uploaded file's URL to display it
+      } else {
+        setUploadStatus(`Error: ${data.message || "Upload failed."}`);
+      }
+    } catch (error) {
+      console.error("Error uploading file:", error);
+      setUploadStatus("Server error. Please try again later.");
+    }
   };
 
   return (
     <div className="items-center justify-center m-5">
       <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-lg">
         <h2 className="text-3xl font-semibold mb-6 text-center text-gray-800">
-          Upload Files
+          Upload File
         </h2>
 
         {/* Drag and drop area */}
@@ -60,36 +77,42 @@ const FileUpload = () => {
           } border-dashed rounded-lg text-center`}
         >
           {isDragging ? (
-            <p className="text-blue-500 font-medium">Drop files here...</p>
+            <p className="text-blue-500 font-medium">Drop file here...</p>
+          ) : uploadedImage ? (
+            <img
+              src={uploadedImage}
+              alt="Uploaded"
+              className="w-full h-auto rounded-lg object-contain"
+            />
           ) : (
             <p className="text-gray-500">
-              Drag and drop files here, or click to select files
+              Drag and drop a file here, or click to select a file
             </p>
           )}
           <input
             type="file"
-            multiple
             onChange={handleFileChange}
             className="hidden"
             id="fileInput"
+            accept="image/*" // Restrict file type to images
           />
-          <label
-            htmlFor="fileInput"
-            className="text-blue-500 underline cursor-pointer"
-          >
-            Browse Files
-          </label>
+          {!uploadedImage && (
+            <label
+              htmlFor="fileInput"
+              className="text-blue-500 underline cursor-pointer"
+            >
+              Browse File
+            </label>
+          )}
         </div>
 
-        {/* Display selected files */}
-        {files.length > 0 && (
-          <ul className="mb-4 bg-gray-100 rounded-lg p-4 max-h-40 overflow-y-auto">
-            {files.map((file, index) => (
-              <li key={index} className="text-gray-700 text-sm">
-                {index + 1}. {file.name} - {Math.round(file.size / 1024)} KB
-              </li>
-            ))}
-          </ul>
+        {/* Display selected file */}
+        {file && (
+          <div className="mb-4 bg-gray-100 rounded-lg p-4">
+            <p className="text-gray-700 text-sm">
+              Selected File: {file.name} - {Math.round(file.size / 1024)} KB
+            </p>
+          </div>
         )}
 
         <motion.button

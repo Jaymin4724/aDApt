@@ -6,6 +6,8 @@ import authMiddleware from "./middleware/AuthMiddleware.js";
 import { importantEmailRouter } from "./routes/importantEmailRoutes.js";
 import { authRouter } from "./routes/authRoutes.js";
 import { qnaRouter } from "./routes/qnaRoutes.js";
+import { fileUploadRouter } from "./routes/fileUploadRoutes.js";
+
 const server = express();
 
 main().catch((error) => {
@@ -26,6 +28,7 @@ server.use(express.json());
 server.use("/api/auth", authRouter);
 server.use("/api/imp-emails", authMiddleware, importantEmailRouter);
 server.use("/api/qna", authMiddleware, qnaRouter);
+server.use("/api/file", fileUploadRouter);
 
 server.listen(process.env.PORT, () => {
   console.log(`Server started at http://localhost:${process.env.PORT}`);
