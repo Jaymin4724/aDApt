@@ -4,7 +4,8 @@ import Navbar from "../Components/Navbar";
 import { TextField } from "@mui/material";
 import axios from "axios";
 import { AuthContext } from "../Context/AuthContext";
-
+import { Add, Delete, Edit, Comment } from "@mui/icons-material";
+import { Success, Error } from "../Components/Toast";
 const baseURL = "http://localhost:5000/api";
 
 export default function QnA() {
@@ -72,10 +73,29 @@ export default function QnA() {
     .filter((question) => question.category === selectedCategory)
     .filter((question) => question.question.toLowerCase().includes(searchTerm));
 
+  const handleDelete = async (questionId) => {
+    try {
+      // Make the API request to delete the question
+      await axios.delete(`${baseURL}/qna/question/${questionId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      // Update the state to remove the deleted question
+      setQuestions((prevQuestions) =>
+        prevQuestions.filter((question) => question._id !== questionId)
+      );
+      Success("Question deleted successfully.");
+    } catch (error) {
+      console.error("Error deleting question:", error);
+      Error("Failed to delete the question.");
+    }
+  };
+
   return (
     <div className="w-full">
       <Navbar />
-      <div className="flex flex-col md:flex-row gap-4 m-5 p-4 bg-gray-100">
+
+      <div className="flex flex-col md:flex-row gap-4 m-4 p-4 bg-gray-100">
         {/* Categories Sidebar */}
         <div className="w-full md:w-1/4 lg:w-1/6 bg-white p-4 overflow-auto shadow-md rounded-lg">
           <h2 className="text-lg font-bold mb-4 border-b pb-2 text-center md:text-left">
@@ -104,9 +124,8 @@ export default function QnA() {
             Questions in{" "}
             {categories.find((cat) => cat._id === selectedCategory)?.name || ""}
           </h2>
-
           {/* Search Bar */}
-          <div className="mb-5">
+          <div className="my-5 flex gap-2">
             <TextField
               label={`Search questions in ${
                 categories.find((cat) => cat._id === selectedCategory)?.name ||
@@ -117,6 +136,14 @@ export default function QnA() {
               value={searchTerm}
               onChange={handleSearch}
             />
+            <button
+              className="flex gap-2 items-center justify-center bg-gray-300 hover:bg-gray-400 text-black p-3 rounded shadow transition duration-200"
+              onClick={() => {
+                navigate("/qna/add");
+              }}
+            >
+              <Add />
+            </button>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -158,12 +185,29 @@ export default function QnA() {
                       onClick={() => handleQuestionClick(question._id)}
                       className="bg-blue-500 hover:bg-blue-600 text-white font-bold px-4 py-2 mt-4 rounded-lg shadow-md transition-transform transform hover:scale-105"
                     >
-                      Chat
+                      <Comment />
                     </button>
                     {question.createdBy === id && (
-                      <button className="bg-green-500 hover:bg-green-600 text-white font-bold px-4 py-2 mt-4 rounded-lg shadow-md transition-transform transform hover:scale-105">
-                        Edit
-                      </button>
+                      <div className="flex gap-2">
+                        <button
+                          className="bg-green-500 hover:bg-green-600 text-white font-bold px-4 py-2 mt-4 rounded-lg shadow-md transition-transform transform hover:scale-105"
+                          onClick={() => {
+                            navigate(`/qna/edit/${question._id}`, {
+                              state: { question },
+                            });
+                          }}
+                        >
+                          <Edit /> {/* Edit Icon */}
+                        </button>
+                        <button
+                          className="bg-red-500 hover:bg-red-600 text-white font-bold px-4 py-2 mt-4 rounded-lg shadow-md transition-transform transform hover:scale-105"
+                          onClick={() => {
+                            handleDelete(question._id);
+                          }}
+                        >
+                          <Delete />
+                        </button>
+                      </div>
                     )}
                   </div>
                 </div>

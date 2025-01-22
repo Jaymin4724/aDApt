@@ -38,7 +38,7 @@ const createCategory = async (req, res) => {
 };
 
 const createQuestion = async (req, res) => {
-  const { question, description, category, createdBy } = req.body;
+  const { question, photo, description, category, createdBy } = req.body;
   if (!question || !category || !createdBy) {
     return res
       .status(400)
@@ -48,6 +48,7 @@ const createQuestion = async (req, res) => {
   try {
     const newQuestion = new QnAQuestion({
       question,
+      photo,
       description,
       createdBy,
       category,

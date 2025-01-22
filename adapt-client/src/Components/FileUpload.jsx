@@ -1,26 +1,27 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 
-const FileUpload = () => {
+const FileUpload = ({ onUploadSuccess }) => {
+  // Accept callback as prop
   const [file, setFile] = useState(null);
   const [uploadStatus, setUploadStatus] = useState("");
   const [isDragging, setIsDragging] = useState(false);
-  const [uploadedImage, setUploadedImage] = useState(""); // contains URL
-
+  const [uploadedImage, setUploadedImage] = useState("");
+  console.log(uploadedImage);
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
-    setFile(selectedFile); // Update with the selected file
-    setUploadStatus(""); // Reset upload status
-    setUploadedImage(""); // Reset uploaded image
+    setFile(selectedFile);
+    setUploadStatus("");
+    setUploadedImage("");
   };
 
   const handleDrop = (e) => {
     e.preventDefault();
     setIsDragging(false);
-    const droppedFile = e.dataTransfer.files[0]; // Accept only the first file
+    const droppedFile = e.dataTransfer.files[0];
     setFile(droppedFile);
-    setUploadStatus(""); // Reset upload status
-    setUploadedImage(""); // Reset uploaded image
+    setUploadStatus("");
+    setUploadedImage("");
   };
 
   const handleDragOver = (e) => {
@@ -50,7 +51,10 @@ const FileUpload = () => {
       const data = await response.json();
       if (response.ok) {
         setUploadStatus("File uploaded successfully!");
-        setUploadedImage(data.url); // Use the uploaded file's URL to display it
+        setUploadedImage(data.url);
+        if (onUploadSuccess) {
+          onUploadSuccess(data.url); // Call the callback with the uploaded image URL
+        }
       } else {
         setUploadStatus(`Error: ${data.message || "Upload failed."}`);
       }
@@ -63,10 +67,6 @@ const FileUpload = () => {
   return (
     <div className="items-center justify-center m-5">
       <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-lg">
-        <h2 className="text-3xl font-semibold mb-6 text-center text-gray-800">
-          Upload File
-        </h2>
-
         {/* Drag and drop area */}
         <div
           onDragOver={handleDragOver}
@@ -94,7 +94,7 @@ const FileUpload = () => {
             onChange={handleFileChange}
             className="hidden"
             id="fileInput"
-            accept="image/*" // Restrict file type to images
+            accept="image/*"
           />
           {!uploadedImage && (
             <label

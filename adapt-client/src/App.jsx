@@ -5,10 +5,15 @@ import SignupPage from "./Pages/SignupPage";
 import LoginPage from "./Pages/LoginPage";
 import FileUpload from "./Components/FileUpload";
 import SharedLibrary from "./Pages/SharedLibrary";
+
 import QnA from "./Pages/QnA";
+import AddQnA from "./Components/QnA/AddQnA";
+import EditQnA from "./Components/QnA/EditQnA";
+
 import LostnFound from "./Pages/LostnFound";
 import ImpEmails from "./Pages/ImpEmails";
 import Admin from "./Pages/Admin";
+
 export default function App() {
   return (
     <Router>
@@ -17,7 +22,11 @@ export default function App() {
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/sharedlibrary" element={<SharedLibrary />} />
+
         <Route path="/qna" element={<QnA />} />
+        <Route path="/qna/add" element={<AddQnA></AddQnA>}></Route>
+        <Route path="/qna/edit/:id" element={<EditQnA></EditQnA>}></Route>
+
         <Route path="/lostnfound" element={<LostnFound />} />
         <Route path="/impmails" element={<ImpEmails />} />
         <Route path="/fileupload" element={<FileUpload />} />
