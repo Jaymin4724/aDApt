@@ -25,7 +25,7 @@ export default function QnA() {
         const fetchedCategories = response.data;
         setCategories(fetchedCategories);
 
-        if (fetchedCategories.length > 0) {
+        if (fetchedCategories.length > 0 && !selectedCategory) {
           setSelectedCategory(fetchedCategories[0]._id);
         }
       } catch (error) {
@@ -58,7 +58,7 @@ export default function QnA() {
     fetchCategories();
     fetchQuestions();
     fetchUsers();
-  }, [token]);
+  }, [token, selectedCategory]);
 
   const handleSearch = (event) => {
     setSearchTerm(event.target.value.toLowerCase());

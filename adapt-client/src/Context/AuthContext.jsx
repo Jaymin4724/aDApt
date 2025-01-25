@@ -4,8 +4,8 @@ const AuthContext = createContext();
 const AuthProvider = ({ children }) => {
   const [isLoggedIn, setLoggedIn] = useState(() => {
     return (
-      (localStorage.getItem("token") && localStorage.getItem("isLoggedIn")) ===
-      "true"
+      localStorage.getItem("token") &&
+      localStorage.getItem("isLoggedIn") === "true"
     );
   });
   const [isAdmin, setIsAdmin] = useState(() => {

@@ -30,8 +30,8 @@ server.use(express.json());
 server.use("/api/auth", authRouter);
 server.use("/api/imp-emails", authMiddleware, importantEmailRouter);
 server.use("/api/qna", authMiddleware, qnaRouter);
-server.use("/shared-library", authMiddleware, sharedLibraryRouter);
-server.use("/lost-and-found", authMiddleware, lostAndFoundRouter);
+server.use("/api/shared-library", authMiddleware, sharedLibraryRouter);
+server.use("/api/lost-and-found", authMiddleware, lostAndFoundRouter);
 server.use("/api/file", fileUploadRouter);
 
 server.listen(process.env.PORT, () => {
