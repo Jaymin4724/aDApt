@@ -7,6 +7,7 @@ import FileUpload from "./Components/FileUpload";
 import SharedLibrary from "./Pages/SharedLibrary";
 
 import QnA from "./Pages/QnA";
+import QnAChat from "./Components/QnA/QnAChat";
 import AddQnA from "./Components/QnA/AddQnA";
 import EditQnA from "./Components/QnA/EditQnA";
 
@@ -24,6 +25,7 @@ export default function App() {
         <Route path="/sharedlibrary" element={<SharedLibrary />} />
 
         <Route path="/qna" element={<QnA />} />
+        <Route path="/qna/:id" element={<QnAChat />} />
         <Route path="/qna/add" element={<AddQnA></AddQnA>}></Route>
         <Route path="/qna/edit/:id" element={<EditQnA></EditQnA>}></Route>
 

@@ -7,6 +7,8 @@ import { importantEmailRouter } from "./routes/importantEmailRoutes.js";
 import { authRouter } from "./routes/authRoutes.js";
 import { qnaRouter } from "./routes/qnaRoutes.js";
 import { fileUploadRouter } from "./routes/fileUploadRoutes.js";
+import { sharedLibraryRouter } from "./routes/sharedLibraryRoutes.js";
+import { lostAndFoundRouter } from "./routes/lnfRoutes.js";
 
 const server = express();
 
@@ -28,6 +30,8 @@ server.use(express.json());
 server.use("/api/auth", authRouter);
 server.use("/api/imp-emails", authMiddleware, importantEmailRouter);
 server.use("/api/qna", authMiddleware, qnaRouter);
+server.use("/shared-library", authMiddleware, sharedLibraryRouter);
+server.use("/lost-and-found", authMiddleware, lostAndFoundRouter);
 server.use("/api/file", fileUploadRouter);
 
 server.listen(process.env.PORT, () => {
