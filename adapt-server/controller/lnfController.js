@@ -44,7 +44,7 @@ const createLostAndFoundCategory = async (req, res) => {
 const createLostAndFoundItem = async (req, res) => {
   const { item, description, photo, category, createdBy, isFound } = req.body;
 
-  if (!item || !photo || !category || !createdBy) {
+  if (!item || !category || !createdBy) {
     return res
       .status(400)
       .json({ error: "Item, photo, category, and createdBy are required" });

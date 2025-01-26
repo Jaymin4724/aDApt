@@ -61,10 +61,12 @@ export default function AddQnA() {
       // Step 2: Add the question
       const newQuestion = {
         question: question.trim(),
-        photo: uploadedImageUrl,
         description: description.trim(),
         createdBy: id,
         category: selectedCategory,
+        ...(uploadedImageUrl !== ""
+          ? { photo: uploadedImageUrl }
+          : { photo: "https://placehold.co/1600x900?text=Item" }),
       };
       console.log("New Question:", newQuestion);
 

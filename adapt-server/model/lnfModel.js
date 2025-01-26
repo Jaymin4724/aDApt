@@ -15,7 +15,13 @@ const lostAndFoundItemSchema = new mongoose.Schema(
   {
     item: { type: String, required: true },
     description: { type: String },
-    photo: { type: String, required: true },
+    photo: {
+      type: String,
+      default: function () {
+        const formattedQuestion = this.question.replace(/\s+/g, "+");
+        return `https://placehold.co/600x400?text=${formattedQuestion}`;
+      },
+    },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

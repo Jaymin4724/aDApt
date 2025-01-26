@@ -61,10 +61,12 @@ export default function AddLnF() {
       // Step 2: Add the lost/found item
       const newItem = {
         item: item.trim(),
-        photo: uploadedPhotoUrl,
         description: description.trim(),
         createdBy: id,
         category: selectedCategory,
+        ...(uploadedPhotoUrl !== ""
+          ? { photo: uploadedPhotoUrl }
+          : { photo: "https://placehold.co/1600x900?text=Item" }),
       };
       console.log("New Lost/Found Item:", newItem);
 

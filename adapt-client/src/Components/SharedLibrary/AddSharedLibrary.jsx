@@ -37,8 +37,8 @@ export default function AddSharedLibrary() {
   }, [token]);
 
   const handleAddItem = async () => {
-    if (!item.trim() || !selectedCategory) {
-      Error("Item and category are required");
+    if (!file || !item.trim() || !selectedCategory) {
+      Error("Resource, item name and category are required");
       return;
     }
     setLoading(true); // Start loading
@@ -79,12 +79,12 @@ export default function AddSharedLibrary() {
       setDescription("");
       setSelectedCategory("");
       setFile(null);
-      navigate("/sharedlibrary"); 
+      navigate("/sharedlibrary");
     } catch (error) {
       console.error("Error adding item:", error);
       Error("Failed to add item. Please try again.");
     } finally {
-      setLoading(false); 
+      setLoading(false);
     }
   };
 
