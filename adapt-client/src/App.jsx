@@ -6,7 +6,6 @@ import LoginPage from "./Pages/LoginPage";
 import FileUpload from "./Components/FileUpload";
 
 import SharedLibrary from "./Pages/SharedLibrary";
-import SharedLibraryChat from "./Components/SharedLibrary/SharedLibraryChat";
 import AddSharedLibrary from "./Components/SharedLibrary/AddSharedLibrary";
 import EditSharedLibrary from "./Components/SharedLibrary/EditSharedLibrary";
 
@@ -32,7 +31,6 @@ export default function App() {
         <Route path="/login" element={<LoginPage />} />
 
         <Route path="/sharedlibrary" element={<SharedLibrary />} />
-        <Route path="/sharedlibrary/:id" element={<SharedLibraryChat />} />
         <Route path="/sharedlibrary/add" element={<AddSharedLibrary />} />
         <Route path="/sharedlibrary/edit/:id" element={<EditSharedLibrary />} />
 
