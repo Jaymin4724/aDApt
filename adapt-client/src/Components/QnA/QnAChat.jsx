@@ -30,12 +30,6 @@ const QnAChat = () => {
 
     fetchChatHistory();
 
-    const handleReceiveMessage = (data) => {
-      setChat((prev) => [...prev, data]);
-    };
-
-    socket.on("receive_message", handleReceiveMessage);
-
     const fetchQuestions = async () => {
       try {
         const response = await axios.get(
@@ -52,15 +46,23 @@ const QnAChat = () => {
 
     fetchQuestions();
 
-    const question = questions.find((q) => q._id === room);
-    if (question) {
-      setSelectedQuestion(question);
-    }
+    const handleReceiveMessage = (data) => {
+      setChat((prev) => [...prev, data]);
+    };
+
+    socket.off("receive_message", handleReceiveMessage);
+    socket.on("receive_message", handleReceiveMessage);
 
     return () => {
       socket.off("receive_message", handleReceiveMessage);
     };
-  }, [room]);
+  }, [room, token]);
+
+  // Update selected question when questions list is updated
+  useEffect(() => {
+    const question = questions.find((q) => q._id === room);
+    setSelectedQuestion(question || null);
+  }, [questions, room]);
 
   const sendMessage = () => {
     if (!message.trim()) return;

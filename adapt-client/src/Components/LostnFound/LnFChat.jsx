@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import socket from "../../utils/socket";
@@ -18,11 +18,13 @@ const LnFChat = () => {
   useEffect(() => {
     socket.emit("join_room", room);
 
+    let isMounted = true;
+
     const fetchChatHistory = async () => {
       try {
         const response = await fetch(`http://localhost:5000/api/chat/${room}`);
         const data = await response.json();
-        setChat(data);
+        if (isMounted) setChat(data);
       } catch (err) {
         console.error("Failed to fetch chat history:", err);
       }
@@ -30,12 +32,13 @@ const LnFChat = () => {
 
     fetchChatHistory();
 
-    const handleReceiveMessage = (data) => {
-      setChat((prev) => [...prev, data]);
+    return () => {
+      isMounted = false;
+      socket.off("receive_message");
     };
+  }, [room]);
 
-    socket.on("receive_message", handleReceiveMessage);
-
+  useEffect(() => {
     const fetchItems = async () => {
       try {
         const response = await axios.get(
@@ -55,16 +58,18 @@ const LnFChat = () => {
     };
 
     fetchItems();
+  }, [room, token]);
 
-    const item = items.find((i) => i._id === room);
-    if (item) {
-      setSelectedItem(item);
-    }
+  const handleReceiveMessage = useCallback((data) => {
+    setChat((prev) => [...prev, data]);
+  }, []);
 
+  useEffect(() => {
+    socket.on("receive_message", handleReceiveMessage);
     return () => {
       socket.off("receive_message", handleReceiveMessage);
     };
-  }, [room]);
+  }, [handleReceiveMessage]);
 
   const sendMessage = () => {
     if (!message.trim()) return;

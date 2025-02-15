@@ -27,12 +27,12 @@ export default function LoginPage() {
       const token = response.data.token;
       const userDetails = response.data.data;
 
-      localStorage.setItem("token", token);
-      localStorage.setItem("id", userDetails._id);
-      localStorage.setItem("username", userDetails.username);
-      localStorage.setItem("emailId", userDetails.emailId);
-      localStorage.setItem("isAdmin", userDetails.isAdmin);
-      localStorage.setItem("isLoggedIn", true);
+      sessionStorage.setItem("token", token);
+      sessionStorage.setItem("id", userDetails._id);
+      sessionStorage.setItem("username", userDetails.username);
+      sessionStorage.setItem("emailId", userDetails.emailId);
+      sessionStorage.setItem("isAdmin", userDetails.isAdmin);
+      sessionStorage.setItem("isLoggedIn", true);
 
       login(
         token,

@@ -2,8 +2,8 @@ import "dotenv/config";
 import cors from "cors";
 import express from "express";
 import { connect } from "mongoose";
-import http from "http"; // Import http module to wrap Express
-import { Server } from "socket.io"; // Import Socket.IO
+import http from "http";
+import { Server } from "socket.io";
 import authMiddleware from "./middleware/AuthMiddleware.js";
 import { importantEmailRouter } from "./routes/importantEmailRoutes.js";
 import { authRouter } from "./routes/authRoutes.js";
@@ -15,10 +15,10 @@ import chatRouter from "./routes/chatRoutes.js";
 import { saveMessage } from "./controller/chatController.js";
 
 const app = express();
-const httpServer = http.createServer(app); // Create HTTP server
+const httpServer = http.createServer(app);
 const io = new Server(httpServer, {
   cors: {
-    origin: "http://localhost:5173", // Replace with your frontend URL
+    origin: "http://localhost:5173",
     methods: ["GET", "POST"],
   },
 });
@@ -46,7 +46,6 @@ app.use("/api/lost-and-found", authMiddleware, lostAndFoundRouter);
 app.use("/api/chat", chatRouter);
 app.use("/api/file", fileUploadRouter);
 
-// Socket.IO logic
 io.on("connection", (socket) => {
   console.log("A user connected: ", socket.id);
 
@@ -61,23 +60,19 @@ io.on("connection", (socket) => {
     console.log("Message received: ", data);
 
     try {
-      // Save the message to the database
       await saveMessage(data);
 
-      // Broadcast the message to the room
       io.to(data.room).emit("receive_message", data);
     } catch (error) {
       console.error("Error saving message:", error);
     }
   });
 
-  // Handle user disconnect
   socket.on("disconnect", () => {
     console.log("A user disconnected: ", socket.id);
   });
 });
 
-// Start the server
 httpServer.listen(process.env.PORT, () => {
   console.log(`Server started at http://localhost:${process.env.PORT}`);
 });

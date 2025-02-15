@@ -19,6 +19,7 @@ export default function ImpMails() {
   const { token, isAdmin } = useContext(AuthContext);
 
   useEffect(() => {
+    if (!token) return; // Prevents API call if user is not authenticated
     const fetchEmails = async () => {
       try {
         const response = await axios.get(`${baseURL}/imp-emails`, {
@@ -152,7 +153,7 @@ export default function ImpMails() {
   return (
     <>
       <Navbar />
-      <div className="p-6 bg-gray-50 rounded-lg shadow-lg">
+      <div className="m-5 p-6 bg-gray-50 rounded-lg shadow-lg">
         <h1 className="text-3xl font-bold mb-3 ml-1 text-gray-700">
           Important Emails
         </h1>

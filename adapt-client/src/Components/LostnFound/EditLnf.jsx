@@ -15,7 +15,6 @@ export default function EditLnf() {
   const [item, setItem] = useState("");
   const [description, setDescription] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
-  const [file, setFile] = useState(null); // Store photo file
   const [imageURL, setImageURL] = useState(""); // URL of uploaded image
   const [uploading, setUploading] = useState(false); // Track image upload process
   const [categories, setCategories] = useState([]);
@@ -103,16 +102,15 @@ export default function EditLnf() {
       Error("Item and category are required");
       return;
     }
-
     try {
       const updatedItem = {
         item: item.trim(),
         description: description.trim(),
         category: selectedCategory,
-        photo: imageURL, // Include the uploaded image URL
-        isFound: found, // Include the found status
+        photo: imageURL,
+        isFound: found,
+        ...(found && { foundAt: new Date() }),
       };
-
       await axios.patch(`${baseURL}/item/${itemId}`, updatedItem, {
         headers: {
           Authorization: `Bearer ${token}`,

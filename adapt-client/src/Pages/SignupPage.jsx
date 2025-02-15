@@ -3,7 +3,7 @@ import Navbar from "../Components/Navbar";
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
 import { IconButton, InputAdornment } from "@mui/material";
-import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { Visibility, VisibilityOff, Key, KeyOff } from "@mui/icons-material";
 import axios from "axios";
 import { Success, Error } from "../Components/Toast";
 import { AuthContext } from "../Context/AuthContext";
@@ -14,12 +14,18 @@ export default function SignupPage() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [adminkey, setAdminKey] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [showAdminKey, setShowAdminkey] = useState(false);
+  const [showAdminField, setShowAdminField] = useState(false);
   const navigate = useNavigate();
   const { login } = useContext(AuthContext);
 
-  const handleTogglePasswordVisibility = () => {
+  const handleTogglePasswordVisibility1 = () => {
     setShowPassword((prev) => !prev);
+  };
+  const handleToggleAdminKey = () => {
+    setShowAdminkey((prev) => !prev);
   };
 
   const signUp = async (data) => {
@@ -29,12 +35,12 @@ export default function SignupPage() {
       const token = response.data.token;
       const userDetails = response.data.data;
 
-      localStorage.setItem("token", token);
-      localStorage.setItem("id", userDetails._id);
-      localStorage.setItem("username", userDetails.username);
-      localStorage.setItem("emailId", userDetails.emailId);
-      localStorage.setItem("isAdmin", userDetails.isAdmin);
-      localStorage.setItem("isLoggedIn", true);
+      sessionStorage.setItem("token", token);
+      sessionStorage.setItem("id", userDetails._id);
+      sessionStorage.setItem("username", userDetails.username);
+      sessionStorage.setItem("emailId", userDetails.emailId);
+      sessionStorage.setItem("isAdmin", userDetails.isAdmin);
+      sessionStorage.setItem("isLoggedIn", true);
 
       login(
         token,
@@ -65,15 +71,23 @@ export default function SignupPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (adminkey && adminkey !== "12345678") {
+      Error("Invalid Admin Key");
+      return;
+    }
+
     if (!username || !email || !password) {
       Error("Please fill in all fields");
       return;
     }
 
+    const isAdmin = adminkey === "12345678";
+
     const userData = {
       username: username.trim().toLowerCase(),
       emailId: email.trim().toLowerCase(),
       password,
+      isAdmin,
     };
 
     try {
@@ -126,7 +140,7 @@ export default function SignupPage() {
           </div>
 
           {/* Password Input */}
-          <div className="mb-6 relative">
+          <div className="mb-4 relative">
             <input
               type={showPassword ? "text" : "password"}
               value={password}
@@ -137,12 +151,56 @@ export default function SignupPage() {
             <InputAdornment position="end" className="absolute right-3 top-1.5">
               <IconButton
                 aria-label="toggle password visibility"
-                onClick={handleTogglePasswordVisibility}
+                onClick={handleTogglePasswordVisibility1}
                 edge="end"
               >
-                {showPassword ? <Visibility /> : <VisibilityOff />}
+                {showPassword ? <VisibilityOff /> : <Visibility />}
               </IconButton>
             </InputAdornment>
+          </div>
+
+          <div className="flex gap-2 mb-4">
+            <motion.button
+              type="button"
+              onClick={() => {
+                setShowAdminField((prev) => !prev);
+                setAdminKey("");
+              }}
+              className="p-2 flex items-center justify-center bg-gray-100 text-gray-700 py-2 rounded-lg font-semibold shadow hover:bg-gray-300 focus:ring-2 focus:ring-blue-500"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              transition={{ duration: 0.3 }}
+            >
+              {showAdminField ? <KeyOff /> : <Key />}
+            </motion.button>
+            {showAdminField && (
+              <motion.div
+                className="relative flex-1"
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                transition={{ duration: 0.5 }}
+              >
+                <input
+                  type={showAdminKey ? "text" : "password"}
+                  value={adminkey}
+                  onChange={(e) => setAdminKey(e.target.value)}
+                  placeholder="Admin Key"
+                  className="w-full bg-gray-50 text-gray-700 px-4 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <InputAdornment
+                  position="end"
+                  className="absolute right-3 top-1.5"
+                >
+                  <IconButton
+                    aria-label="toggle password visibility"
+                    onClick={handleToggleAdminKey}
+                    edge="end"
+                  >
+                    {showAdminKey ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              </motion.div>
+            )}
           </div>
 
           {/* Sign Up Button */}

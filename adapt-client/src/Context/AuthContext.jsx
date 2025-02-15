@@ -3,34 +3,30 @@ const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
   const [isLoggedIn, setLoggedIn] = useState(() => {
-    return (
-      localStorage.getItem("token") &&
-      localStorage.getItem("isLoggedIn") === "true"
-    );
+    return JSON.parse(sessionStorage.getItem("isLoggedIn") || "false");
   });
   const [isAdmin, setIsAdmin] = useState(() => {
-    return localStorage.getItem("isAdmin") === "true";
-  });
-  const [id, setId] = useState(() => {
-    return localStorage.getItem("id") || "";
-  });
-  const [username, setUsername] = useState(() => {
-    return localStorage.getItem("username") || "";
-  });
-  const [emailId, setEmailId] = useState(() => {
-    return localStorage.getItem("emailId") || "";
-  });
-  const [token, setToken] = useState(() => {
-    return localStorage.getItem("token") || "";
+    return JSON.parse(sessionStorage.getItem("isAdmin") || "false");
   });
 
+  const [id, setId] = useState(() => sessionStorage.getItem("id") || "");
+  const [username, setUsername] = useState(
+    () => sessionStorage.getItem("username") || ""
+  );
+  const [emailId, setEmailId] = useState(
+    () => sessionStorage.getItem("emailId") || ""
+  );
+  const [token, setToken] = useState(
+    () => sessionStorage.getItem("token") || ""
+  );
+
   useEffect(() => {
-    localStorage.setItem("token", token);
-    localStorage.setItem("id", id);
-    localStorage.setItem("username", username);
-    localStorage.setItem("emailId", emailId);
-    localStorage.setItem("isLoggedIn", isLoggedIn);
-    localStorage.setItem("isAdmin", isAdmin);
+    sessionStorage.setItem("token", token);
+    sessionStorage.setItem("id", id);
+    sessionStorage.setItem("username", username);
+    sessionStorage.setItem("emailId", emailId);
+    sessionStorage.setItem("isLoggedIn", JSON.stringify(isLoggedIn));
+    sessionStorage.setItem("isAdmin", JSON.stringify(isAdmin));
   }, [token, id, username, emailId, isLoggedIn, isAdmin]);
 
   const login = (token, id, username, emailId, isLoggedIn, isAdmin) => {
@@ -45,10 +41,18 @@ const AuthProvider = ({ children }) => {
   // Logout function
   const logout = () => {
     setToken("");
+    setId("");
     setUsername("");
     setEmailId("");
     setLoggedIn(false);
-    localStorage.clear();
+    setIsAdmin(false);
+
+    sessionStorage.removeItem("token");
+    sessionStorage.removeItem("id");
+    sessionStorage.removeItem("username");
+    sessionStorage.removeItem("emailId");
+    sessionStorage.removeItem("isLoggedIn");
+    sessionStorage.removeItem("isAdmin");
   };
 
   return (

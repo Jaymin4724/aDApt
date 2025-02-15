@@ -102,7 +102,7 @@ const editLostAndFoundCategory = async (req, res) => {
 // Edit an item
 const editLostAndFoundItem = async (req, res) => {
   const { id } = req.params;
-  const { item, description, photo, category, isFound } = req.body;
+  const { item, description, photo, category, isFound, foundAt } = req.body;
 
   if (!id) {
     return res.status(400).json({ error: "Item ID is required" });
@@ -115,6 +115,8 @@ const editLostAndFoundItem = async (req, res) => {
     if (photo) updateFields.photo = photo;
     if (category) updateFields.category = category;
     if (isFound !== undefined) updateFields.isFound = isFound;
+    if (isFound) updateFields.foundAt = foundAt;
+    if (isFound == false) updateFields.foundAt = null;
 
     const updatedItem = await LostAndFoundItem.findByIdAndUpdate(
       id,

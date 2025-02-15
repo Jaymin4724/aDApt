@@ -4,7 +4,7 @@ import Navbar from "../Components/Navbar";
 import { TextField } from "@mui/material";
 import axios from "axios";
 import { AuthContext } from "../Context/AuthContext";
-import { Add, Delete, Edit } from "@mui/icons-material";
+import { Add, Delete, Edit, Comment, TaskAlt, Task } from "@mui/icons-material";
 import { Success, Error } from "../Components/Toast";
 const baseURL = "http://localhost:5000/api";
 
@@ -78,6 +78,32 @@ export default function LostnFound() {
     } catch (error) {
       console.error("Error deleting item:", error);
       Error("Failed to delete the item.");
+    }
+  };
+
+  const handleFound = async (itemId) => {
+    try {
+      const response = await axios.patch(
+        `${baseURL}/lost-and-found/item/${itemId}`,
+        { isFound: true, foundAt: new Date() },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      // Update the local state to reflect the change
+      setItems((prevItems) =>
+        prevItems.map((item) =>
+          item._id === itemId
+            ? { ...item, isFound: true, foundAt: new Date() }
+            : item
+        )
+      );
+
+      Success("Item marked as found!");
+    } catch (error) {
+      console.error("Error marking item as found:", error);
+      Error("Failed to mark the item as found.");
     }
   };
 
@@ -176,8 +202,9 @@ export default function LostnFound() {
                       onClick={() => handleItemClick(item._id)}
                       className="bg-blue-500 hover:bg-blue-600 text-white font-bold px-4 py-2 mt-4 rounded-lg shadow-md transition-transform transform hover:scale-105"
                     >
-                      Chat
+                      <Comment />
                     </button>
+
                     {item.createdBy === id && (
                       <div className="flex gap-2">
                         <button
@@ -195,6 +222,17 @@ export default function LostnFound() {
                           className="bg-red-500 hover:bg-red-600 text-white font-bold px-4 py-2 mt-4 rounded-lg shadow-md transition-transform transform hover:scale-105"
                         >
                           <Delete />
+                        </button>
+                        <button
+                          disabled={item.isFound}
+                          onClick={() => handleFound(item._id)}
+                          className={`${
+                            item.isFound
+                              ? "bg-gray-400 cursor-not-allowed"
+                              : "bg-blue-500 hover:bg-blue-600"
+                          } text-white font-bold px-4 py-2 mt-4 rounded-lg shadow-md transition-transform transform hover:scale-105`}
+                        >
+                          <TaskAlt />
                         </button>
                       </div>
                     )}
